@@ -45,7 +45,7 @@
 graph TB
     subgraph FoldBox["折叠框 RuntimeFoldBox"]
         S[摘要行 summary<br/>图标 + 分类计数 + 工具名列表 + chevron]
-        C[框体内容<br/>框内节点列表（虚拟列表，见 M4）]
+        C[框体内容<br/>框内节点列表（按实际内容高度展开）]
     end
     S --> C
 ```
@@ -57,6 +57,7 @@ graph TB
 - 摘要行内「展开框内最近 N 条」按钮：点击需 `preventDefault` + `stopPropagation`（阻止冒泡触发 details 原生 toggle）；键盘用户经 Tab 聚焦按钮后回车触发，等效于摘要行的部分展开语义；
 - 展开/收起动画：≤200ms 淡入 + 高度过渡（决策 20），长列表展开不卡顿；动画仅作用于框体内容，不作用于框外保留条；
 - 展开状态持久化：localStorage（键 `dsh.chat-focus.fold.<组anchorKey>`），跨会话保留；流式追加不重置用户展开状态（L2 决策 17）。
+- 展开框不使用条目阈值、估算行高或固定 `max-height`：全部活动项按原顺序渲染，框体由实际内容自然撑高；页面统一由会话滚动容器滚动。
 
 ### 2.2 框外保留条（outside 节点）
 
@@ -163,9 +164,14 @@ CSS 变量（默认值映射宿主 `--dsw-*` 语义 token，无字面色值；�
 | 17 | 16:03 | 展开状态持久化 | 仅会话内 | localStorage 按组持久化 | 不持久化 | localStorage 按组持久化 | 跨会话保留用户展开习惯，容量受限静默回退 |
 | 18 | 16:03 | 思考内容折叠语义 | 沿用宿主行为 | 两层折叠 | 完全隐藏 | 沿用宿主行为 | 宿主 ReasoningRow 本就可收起，不重复折叠；foldReasoning 仅控制是否纳入运行时组 |
 | 19 | 16:03 | 气泡时间显示 | 不显示时间 | HH:MM+跨天日期 | 完整时间戳+时长 | HH:MM+跨天日期 | 简洁且保留时间锚点，与宿主格式一致 |
+| 20 | 2026-08-18 | 长活动组展开布局 | 估算行高虚拟列表+固定视窗 | 真实行高虚拟列表 | 全量内容自适应 | 全量内容自适应 | 工具与思考行高度不固定；不预留 360px 空白，展开框始终跟随实际活动条数 |
 
 ## 7. L2 划分（已定）
 
 - L2-1 RuntimeFoldBox（摘要行、三态展开、localStorage 持久化）
 - L2-2 ChatBubble（user/assistant 变体、多段合并、HH:MM 时间/操作行）
 - L2-3 主题变量（变量表、compact 变体、与宿主 token 映射）
+
+## 8. 变量文档同步记录
+
+- 2026-08-18：`RuntimeFoldBox` 取消固定高度与虚拟视窗，仅复用现有的 `--dsw-alias-border-l1`、`--dsw-alias-bg-layer-1`、`--dsw-alias-bg-layer-2`、`--dsw-alias-label-primary`、`--dsw-alias-label-secondary`、`--dsw-alias-interactive-bg-hover` 和 `--dsw-font-s-strong-14`。本次未新增、修改或废弃视觉变量；布局高度改为内容决定的 `auto` 行为。

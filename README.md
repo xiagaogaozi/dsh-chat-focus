@@ -12,7 +12,7 @@ dsh web 对话界面插件：将文本回复之前的**连续运行时信息**�
 - **最近 N 个回复保持展开**：`focusKeepVisible` 语义为「保持展开的最近回复数」——最近 N 个聊天气泡对应的运行时信息默认展开，这 N 个之前的旧运行时信息全部折叠；流式中尚未有回复的活动也保持可见
 - **三种折叠策略**（设置页可选）：最近 N 个回复展开（keep-recent）/ 阈值折叠（条目数超过 N 才折叠，threshold）/ 全部折叠（always）
 - **聊天气泡**：助手回复左侧气泡（DeepSeek 鱼形 logo + HH:MM 时间，跨天显示日期），默认样式与用户气泡一致（DeepSeek 主题蓝、22px 圆角）；用户消息沿用宿主气泡
-- **折叠框摘要**：分类计数（工具/思考/其他）+ 去重工具名列表（最多 5 个）；展开状态按组持久化（localStorage，策略变化自动失效旧状态）；长运行时组**窗口化渲染**（虚拟列表，恒定渲染成本）
+- **折叠框摘要**：分类计数（工具/思考/其他）+ 去重工具名列表（最多 5 个）；展开状态按组持久化（localStorage，策略变化自动失效旧状态）；展开框按实际活动行数自然撑高，不再用估算行高或固定视窗截断内容
 - **高度自定义**（设置页『对话显示』→ 外观）：
   - 助手/用户气泡各 14 项：背景色、边框色、圆角、最大宽度、背景图片、背景适配（cover/contain/stretch）、文字颜色、字体、字号、内边距（任意 CSS 值）——两侧同构，均可独立设置
   - 字体下拉预设（真实存在、视觉差异明显）：跟随主题 / 楷体 KaiTi / 宋体 SimSun / 黑体 SimHei / 微软雅黑（≈默认）/ 衬线 Georgia / 等宽 Consolas
@@ -148,6 +148,7 @@ pnpm install        # 宿主仓库（rc.5 基线）作为跨仓库 workspace 成
 pnpm run typecheck  # tsc --noEmit（类型契约来自宿主 lib/types 构建产物）
 pnpm run bundle     # tsdown：lib/index.js（node 半区）+ lib/client.js（浏览器 bundle）
 pnpm run test:engine # 分组引擎行为检查（tsx）
+pnpm run test:fold-layout # 折叠框自适应高度契约检查
 ```
 
 > 开发环境说明：`pnpm-workspace.yaml` 将 `../deepseek-harness/packages/*/*` 与 `../deepseek-harness/vendor/*` 列为 workspace 成员（精确 rc.5 契约）。若 pnpm 因跨目录 workspace 未生成 node_modules，按 `node scripts/setup-junctions.mjs` 手工链接构建依赖。**不要**在本仓库运行会改写宿主 node_modules 的 pnpm 命令。
@@ -166,10 +167,10 @@ pnpm run test:engine # 分组引擎行为检查（tsx）
 
 宿主处于 pre-release（契约随时可漂移）——若适配成本超出维护能力，备选方案（视图附加型，零手术纯插件行）见 `docs/design/solution-design-20260816-dsh-chat-focus-备选方案-视图附加型.md`。
 
-## 已知限制（v0.2）
+## 已知限制（v0.2.5）
 
 - 设置页预览为内置示例数据（settings.section 为 root scope，无会话数据通道；真实会话预览按反馈暂缓）
-- 折叠框虚拟化使用估算行高（固定 56px 行距），行高校准（ResizeObserver 实测）为 v0.3 项
+- 展开超长运行时组会完整渲染所有活动行，并随其自然增高；这避免了估算行高导致的空白区域，但长会话本身会更长
 - 字体预设依赖系统字体：楷体/宋体/黑体在 Windows 与 macOS 均内置，Linux 可能缺失（缺字体时回退到系统默认）
 
 ## 许可证

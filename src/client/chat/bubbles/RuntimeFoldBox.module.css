@@ -1,6 +1,5 @@
-/* RuntimeFoldBox: fold summary line + scrollable body. The body scrolls
-   inside itself (max-height) so a long run never stretches the outer flow;
-   outer conversation scrolling/anchor logic stays untouched. */
+/* RuntimeFoldBox: fold summary line + content-sized body. The conversation
+   owns scrolling; an expanded box grows with its activity rows. */
 
 .box {
   border: 1px solid var(--dsw-alias-border-l1);
@@ -74,9 +73,7 @@
 }
 
 .body {
-  max-height: 360px;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: visible;
   border-top: 1px solid var(--dsw-alias-border-l1);
   display: flex;
   flex-direction: column;

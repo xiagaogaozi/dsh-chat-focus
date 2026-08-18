@@ -1,6 +1,7 @@
 # Build artifacts and tooling state.
 node_modules/
 lib/
+*.tgz
 *.tsbuildinfo
 *.log
 .DS_Store
